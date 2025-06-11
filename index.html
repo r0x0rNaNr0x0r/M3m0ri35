@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TERMINAL_ACCESS_GRANTED</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono:wght@400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: #000;
+            color: #00ff41;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            line-height: 1.4;
+            overflow-x: hidden;
+            cursor: none;
+        }
+        
+        /* Custom cursor */
+        .cursor {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: #00ff41;
+            box-shadow: 0 0 10px #00ff41;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: screen;
+        }
+        
+        /* Scanlines effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(transparent 50%, rgba(0, 255, 65, 0.03) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        /* Screen flicker */
+        @keyframes flicker {
+            0% { opacity: 1; }
+            98% { opacity: 1; }
+            99% { opacity: 0.98; }
+            100% { opacity: 1; }
+        }
+        
+        .container {
+            padding: 20px;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at center, #001100 0%, #000000 100%);
+            animation: flicker 0.15s infinite linear alternate;
+        }
+        
+        .header {
+            border: 1px solid #00ff41;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(0, 255, 65, 0.05);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        
+        .title {
+            font-size: 18px;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff41;
+        }
+        
+        .subtitle {
+            font-size: 12px;
+            text-align: center;
+            color: #00aa33;
+        }
+        
+        .terminal-output {
+            margin: 20px 0;
+        }
+        
+        .prompt {
+            color: #00ff41;
+            margin: 10px 0;
+        }
+        
+        .prompt::before {
+            content: "root@cyberspace:~$ ";
+            color: #00aa33;
+        }
+        
+        .hex-data {
+            background: rgba(0, 255, 65, 0.02);
+            border-left: 3px solid #00ff41;
+            padding: 15px;
+            margin: 15px 0;
+            word-wrap: break-word;
+            word-break: break-all;
+            line-height: 1.6;
+            font-size: 13px;
+            box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
+            font-family: 'Share Tech Mono', monospace;
+            white-space: pre-wrap;
+            overflow-wrap: break-word;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .warning {
+            color: #ff4444;
+            background: rgba(255, 68, 68, 0.1);
+            border: 1px solid #ff4444;
+            padding: 10px;
+            margin: 15px 0;
+            text-align: center;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 5px #ff4444; }
+            to { box-shadow: 0 0 20px #ff4444; }
+        }
+        
+        .typing::after {
+            content: "█";
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #007722;
+            font-size: 11px;
+        }
+        
+        /* Matrix-style background effect */
+        .matrix {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            opacity: 0.1;
+        }
+    </style>
+</head>
+<body>
+    <div class="cursor"></div>
+    <div class="scanlines"></div>
+    <canvas class="matrix"></canvas>
+    
+    <div class="container">
+        <div class="header">
+            <div class="title">╔═══════════════════════════════╗</div>
+            <div class="title">║    CLASSIFIED DATA ACCESS     ║</div>
+            <div class="title">╚═══════════════════════════════╝</div>
+            <div class="subtitle">NEURAL NETWORK BREACH DETECTED :: LEVEL 7 CLEARANCE REQUIRED</div>
+        </div>
+        
+        <div class="warning">
+            ⚠️ DATA RECOVERY IN PROGRESS ⚠️<br>
+            ANALYZING MEMORY FRAGMENTS... RECONSTRUCTING FILES...
+        </div>
+        
+        <div class="terminal-output">
+            <div class="prompt">ls -la /tmp/recovered_files/</div>
+            <div style="color: #00aaff; margin-left: 20px;">total 51248</div>
+            <div style="color: #00aaff; margin-left: 20px;">-rw-r--r-- 1 root root 52428800 Jun 11 15:42 Nanr0x0rNan_m3m0Ri35.txt</div>
+            
+            <div class="prompt">file Nanr0x0rNan_m3m0Ri35.txt</div>
+            <div style="color: #00aaff; margin-left: 20px;">Nanr0x0rNan_m3m0Ri35.txt: ASCII text, with very long lines</div>
+            
+            <div class="prompt">xxd -l 256 Nanr0x0rNan_m3m0Ri35.txt</div>
+            
+            <div class="hex-data" id="hexData">
+                <div style="color: #ffaa00; text-align: center; padding: 20px;">
+                    Loading encrypted data...
+                    <div class="typing" style="margin-top: 10px;">Decrypting payload</div>
+                </div>
+            </div>
+            
+            <div class="prompt">wc -c Nanr0x0rNan_m3m0Ri35.txt</div>
+            <div style="color: #00aaff; margin-left: 20px;">52428800 Nanr0x0rNan_m3m0Ri35.txt</div>
+            
+            <div class="prompt">head -c 100 Nanr0x0rNan_m3m0Ri35.txt | xxd</div>
+            <div style="color: #00aaff; margin-left: 20px;">00000000: 6666 6438 6666 6530 3030 3130 3461 3436  ffd8ffe000104a46</div>
+            <div style="color: #00aaff; margin-left: 20px;">00000010: 3439 3436 3030 3031 3031 3031 3030 3438  4946000101010048</div>
+            
+            <div class="prompt">strings Nanr0x0rNan_m3m0Ri35.txt | grep -i "flag"</div>
+            <div style="color: #ffaa00; margin-left: 20px;">(no output)</div>
+            
+            <div class="prompt">WTF is this file ?</div>
+            
+            <div class="prompt">d4t4 errors</div>
+            <div style="color: #00aaff; margin-left: 20px;">decoded_output.bin: data</div>
+            
+            <div class="prompt typing">exit</div>
+        </div>
+        
+        <div class="footer">
+            ┌─────────────────────────────────────────────────────────┐<br>
+            │ CONNECTION ESTABLISHED :: GRID_NEXUS_7 :: PORT 2077    │<br>
+            │ RECOVERED: Nanr0x0rNan_m3m0Ri35.txt :: STATUS: ACTIVE  │<br>
+            └─────────────────────────────────────────────────────────┘
+        </div>
+    </div>
+    
+    <script>
+        // Download function for hex data (defined at global scope FIRST)
+        window.downloadHex = function() {
+            console.log('=== DOWNLOAD FUNCTION STARTED ===');
+            console.log('Hex data available:', !!window.hexData);
+            console.log('Hex data length:', window.hexData ? window.hexData.length : 0);
+            
+            if (!window.hexData) {
+                console.error('No hex data available for download');
+                alert('❌ Hex data not loaded yet! Please wait for the page to finish loading.');
+                return;
+            }
+            
+            if (window.hexData.length === 0) {
+                console.error('Hex data is empty');
+                alert('❌ Hex data is empty!');
+                return;
+            }
+            
+            try {
+                console.log('Creating blob...');
+                const blob = new Blob([window.hexData], { type: 'text/plain' });
+                console.log('Blob created:', blob.size, 'bytes');
+                
+                console.log('Creating download URL...');
+                const url = window.URL.createObjectURL(blob);
+                console.log('URL created:', url);
+                
+                console.log('Creating download link...');
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Nanr0x0rNan_m3m0Ri35.txt';
+                a.style.display = 'none';
+                
+                console.log('Adding link to page...');
+                document.body.appendChild(a);
+                
+                console.log('Triggering download click...');
+                a.click();
+                
+                console.log('Cleaning up...');
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+                
+                console.log('=== DOWNLOAD COMPLETED SUCCESSFULLY ===');
+                
+                // Add some terminal feedback
+                const terminal = document.querySelector('.terminal-output');
+                if (terminal) {
+                    const feedback = document.createElement('div');
+                    feedback.innerHTML = '<div class="prompt">cp /tmp/recovered_files/Nanr0x0rNan_m3m0Ri35.txt ~/Downloads/</div><div style="color: #00aaff; margin-left: 20px;">✓ File transfer complete ('+Math.floor(window.hexData.length/1024)+'KB)</div>';
+                    terminal.appendChild(feedback);
+                }
+                
+            } catch (error) {
+                console.error('=== DOWNLOAD ERROR ===', error);
+                console.error('Error stack:', error.stack);
+                alert('❌ Download failed: ' + error.message + '\n\nCheck console for details.');
+            }
+        };
+        
+        // Alternative download method (fallback)
+        window.downloadHexAlt = function() {
+            console.log('=== ALTERNATIVE DOWNLOAD METHOD ===');
+            if (!window.hexData) {
+                alert('No data available');
+                return;
+            }
+            
+            // Try to save to clipboard as fallback
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(window.hexData).then(() => {
+                    alert('✅ Hex data copied to clipboard! You can paste it into a text file.');
+                }).catch(err => {
+                    console.error('Clipboard copy failed:', err);
+                    alert('❌ Download and clipboard both failed. Check console for details.');
+                });
+            } else {
+                alert('❌ Download failed and clipboard not available. Check browser console for details.');
+            }
+        };
+
+        // DEBUG FUNCTIONS - You can call these manually in console
+        window.debugChunks = function() {
+            console.log('=== MANUAL CHUNK DEBUG ===');
+            if (!window.hexDataChunks) {
+                console.log('No chunk data available');
+                return;
+            }
+            
+            window.hexDataChunks.forEach((chunk, index) => {
+                console.log(`Chunk ${chunk.number}:`);
+                console.log(`  Original length: ${chunk.length}`);
+                console.log(`  First 50: ${JSON.stringify(chunk.data.substring(0, 50))}`);
+                console.log(`  Last 50: ${JSON.stringify(chunk.data.substring(chunk.length - 50))}`);
+            });
+        };
+        
+        window.compareOriginalVsDownload = function(originalHex) {
+            console.log('=== COMPARING ORIGINAL VS DOWNLOAD ===');
+            if (!window.hexData) {
+                console.log('No download data available');
+                return;
+            }
+            
+            console.log(`Original length: ${originalHex.length}`);
+            console.log(`Download length: ${window.hexData.length}`);
+            
+            if (originalHex.length !== window.hexData.length) {
+                console.log('❌ LENGTH MISMATCH!');
+            }
+            
+            // Find first difference
+            for (let i = 0; i < Math.min(originalHex.length, window.hexData.length); i++) {
+                if (originalHex[i] !== window.hexData[i]) {
+                    console.log(`❌ First difference at position ${i}:`);
+                    console.log(`  Original: ${JSON.stringify(originalHex.substring(i-10, i+10))}`);
+                    console.log(`  Download: ${JSON.stringify(window.hexData.substring(i-10, i+10))}`);
+                    break;
+                }
+            }
+        };
+        
+        window.downloadCleanHex = function() {
+            console.log('=== DOWNLOADING CLEANED HEX ===');
+            if (!window.hexData) {
+                alert('No data available');
+                return;
+            }
+            
+            // Remove all whitespace and newlines
+            const cleanedHex = window.hexData.replace(/\s/g, '');
+            console.log(`Original length: ${window.hexData.length}`);
+            console.log(`Cleaned length: ${cleanedHex.length}`);
+            
+            const blob = new Blob([cleanedHex], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Nanr0x0rNan_m3m0Ri35_CLEANED.txt';
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            console.log('✅ Downloaded cleaned version');
+        };
+
+        // Load hex data from multiple chunk files
+        async function loadHexData() {
+            const hexContainer = document.getElementById('hexData');
+            
+            // Debug: Log that function started
+            console.log('=== LoadHexData function started ===');
+            
+            try {
+                let fullHexData = '';
+                let chunkNumber = 1;
+                let hasMoreChunks = true;
+                let loadedChunks = [];
+                
+                hexContainer.innerHTML = `
+                    <div style="color: #ffaa00; text-align: center; padding: 20px;">
+                        Loading encrypted data chunks...
+                        <div class="typing" style="margin-top: 10px;">Processing chunk 1</div>
+                        <div style="color: #666; font-size: 10px; margin-top: 10px;">Debug: Check browser console (F12) for details</div>
+                    </div>
+                `;
+                
+                // Load chunks sequentially and ensure proper order
+                while (hasMoreChunks) {
+                    try {
+                        const url = `data_chunk_${chunkNumber}.txt`;
+                        console.log(`Attempting to fetch: ${url}`);
+                        
+                        const response = await fetch(url);
+                        console.log(`Response for ${url}:`, response.status, response.statusText);
+                        
+                        if (!response.ok) {
+                            console.log(`Failed to fetch ${url}, stopping...`);
+                            hasMoreChunks = false;
+                            break;
+                        }
+                        
+                        const chunkData = await response.text();
+                        console.log(`Loaded ${url}: ${chunkData.length} characters`);
+                        console.log(`First 50 chars of ${url}:`, chunkData.substring(0, 50));
+                        console.log(`Last 50 chars of ${url}:`, chunkData.substring(chunkData.length - 50));
+                        
+                        // Store chunk with its number for validation
+                        loadedChunks.push({
+                            number: chunkNumber,
+                            data: chunkData,
+                            length: chunkData.length
+                        });
+                        
+                        // Update loading message
+                        hexContainer.innerHTML = `
+                            <div style="color: #ffaa00; text-align: center; padding: 20px;">
+                                Loading encrypted data chunks...
+                                <div class="typing" style="margin-top: 10px;">Loaded chunk ${chunkNumber} (${chunkData.length} chars)</div>
+                                <div style="color: #666; font-size: 10px; margin-top: 10px;">Debug: Check browser console (F12) for details</div>
+                            </div>
+                        `;
+                        
+                        chunkNumber++;
+                    } catch (error) {
+                        console.error(`Error loading chunk ${chunkNumber}:`, error);
+                        hasMoreChunks = false;
+                    }
+                }
+                
+                console.log(`Total chunks loaded: ${loadedChunks.length}`);
+                
+                // Validate and combine chunks in correct order
+                if (loadedChunks.length === 0) {
+                    throw new Error('No hex chunks found');
+                }
+                
+                // Sort chunks by number to ensure correct order
+                loadedChunks.sort((a, b) => a.number - b.number);
+                
+                // DETAILED CHUNK ANALYSIS
+                console.log('=== DETAILED CHUNK ANALYSIS ===');
+                for (let i = 0; i < loadedChunks.length; i++) {
+                    const chunk = loadedChunks[i];
+                    console.log(`Chunk ${chunk.number}:`);
+                    console.log(`  Length: ${chunk.length}`);
+                    console.log(`  First 30: "${chunk.data.substring(0, 30)}"`);
+                    console.log(`  Last 30: "${chunk.data.substring(chunk.length - 30)}"`);
+                    console.log(`  Has newlines: ${chunk.data.includes('\n')}`);
+                    console.log(`  Has carriage returns: ${chunk.data.includes('\r')}`);
+                    console.log(`  Has spaces: ${chunk.data.includes(' ')}`);
+                    
+                    // Check for non-hex characters
+                    const nonHexChars = chunk.data.match(/[^0-9a-fA-F\n\r\s]/g);
+                    if (nonHexChars) {
+                        console.log(`  ⚠️ Non-hex characters found: ${JSON.stringify(nonHexChars.slice(0, 10))}`);
+                    }
+                    
+                    // Check chunk boundaries
+                    if (i > 0) {
+                        const prevChunk = loadedChunks[i-1];
+                        const prevEnd = prevChunk.data.substring(prevChunk.length - 10);
+                        const currentStart = chunk.data.substring(0, 10);
+                        console.log(`  Boundary check: prev ends "${prevEnd}" -> current starts "${currentStart}"`);
+                    }
+                }
+                
+                // Combine chunks with detailed logging
+                console.log('=== COMBINING CHUNKS ===');
+                fullHexData = "";
+                
+                for (let i = 0; i < loadedChunks.length; i++) {
+                    const chunk = loadedChunks[i];
+                    console.log(`Adding chunk ${chunk.number}: ${chunk.length} chars`);
+                    
+                    const beforeLength = fullHexData.length;
+                    fullHexData += chunk.data;
+                    const afterLength = fullHexData.length;
+                    
+                    console.log(`  Before: ${beforeLength}, After: ${afterLength}, Added: ${afterLength - beforeLength}`);
+                    
+                    if (afterLength - beforeLength !== chunk.length) {
+                        console.error(`❌ LENGTH MISMATCH in chunk ${chunk.number}!`);
+                        console.error(`  Expected to add: ${chunk.length}`);
+                        console.error(`  Actually added: ${afterLength - beforeLength}`);
+                    }
+                }
+                
+                console.log(`Final combined hex data length: ${fullHexData.length}`);
+                console.log(`First 100 chars of combined data: "${fullHexData.substring(0, 100)}"`);
+                console.log(`Last 100 chars of combined data: "${fullHexData.substring(fullHexData.length - 100)}"`);
+                
+                // Validate hex data format with detailed analysis
+                console.log('=== HEX DATA VALIDATION ===');
+                const hexPattern = /^[0-9a-fA-F\s\n\r]*$/;
+                if (!hexPattern.test(fullHexData)) {
+                    console.warn('⚠️ Combined data contains non-hex characters!');
+                    
+                    // Find and report non-hex characters
+                    const nonHexMatches = fullHexData.match(/[^0-9a-fA-F\s\n\r]/g);
+                    if (nonHexMatches) {
+                        console.warn(`Non-hex characters: ${JSON.stringify(nonHexMatches.slice(0, 20))}`);
+                        
+                        // Find positions of non-hex characters
+                        for (let i = 0; i < Math.min(fullHexData.length, 10000); i++) {
+                            const char = fullHexData[i];
+                            if (!/[0-9a-fA-F\s\n\r]/.test(char)) {
+                                console.warn(`Non-hex char "${char}" (code: ${char.charCodeAt(0)}) at position ${i}`);
+                                console.warn(`Context: "${fullHexData.substring(Math.max(0, i-10), i+10)}"`);
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // Check for common corruption patterns
+                console.log('=== CORRUPTION PATTERN CHECK ===');
+                if (fullHexData.includes('\r\n')) {
+                    console.warn('⚠️ Found Windows line endings (\\r\\n)');
+                }
+                if (fullHexData.includes('\ufeff')) {
+                    console.warn('⚠️ Found BOM (Byte Order Mark)');
+                }
+                if (fullHexData.match(/\s{2,}/)) {
+                    console.warn('⚠️ Found multiple consecutive spaces');
+                }
+                
+                // Store hex data globally for download FIRST
+                window.hexData = fullHexData;
+                window.hexDataChunks = loadedChunks; // Store chunks for debugging
+                
+                // Display the combined hex data
+                hexContainer.innerHTML = '';
+                
+                // Add download button
+                const downloadSection = document.createElement('div');
+                downloadSection.style.textAlign = 'center';
+                downloadSection.style.marginBottom = '20px';
+                downloadSection.innerHTML = `
+                    <div style="color: #00aaff; margin-bottom: 10px;">
+                        root@cyberspace:~$ ls -la /tmp/recovered_files/
+                    </div>
+                    <button id="downloadBtn" style="
+                        background: #001100;
+                        color: #00ff41;
+                        border: 1px solid #00ff41;
+                        padding: 8px 16px;
+                        font-family: 'Share Tech Mono', monospace;
+                        cursor: pointer;
+                        margin: 5px;
+                        box-shadow: 0 0 10px rgba(0,255,65,0.3);
+                    ">📁 Nanr0x0rNan_m3m0Ri35.txt</button>
+                    <div style="color: #666; font-size: 11px; margin-top: 5px;">
+                        -rw-r--r-- 1 root root ${Math.floor(fullHexData.length/1024)}K Nanr0x0rNan_m3m0Ri35.txt
+                    </div>
+                    <div style="color: #00aa33; font-size: 10px; margin-top: 5px;">
+                        ✓ Successfully loaded ${loadedChunks.length} chunks (${fullHexData.length} characters)
+                    </div>
+                `;
+                
+                const hexContent = document.createElement('div');
+                hexContent.style.color = '#00ff41';
+                hexContent.style.wordBreak = 'break-all';
+                hexContent.style.fontFamily = 'Share Tech Mono, monospace';
+                hexContent.style.lineHeight = '1.4';
+                hexContent.textContent = fullHexData;
+                
+                hexContainer.appendChild(downloadSection);
+                hexContainer.appendChild(hexContent);
+                
+                // Add ONLY ONE event listener to download button
+                const downloadBtn = document.getElementById('downloadBtn');
+                console.log('Download button found:', !!downloadBtn);
+                
+                if (downloadBtn) {
+                    downloadBtn.addEventListener('click', function(event) {
+                        console.log('=== DOWNLOAD BUTTON CLICKED ===');
+                        event.preventDefault(); // Prevent any default behavior
+                        
+                        try {
+                            window.downloadHex();
+                        } catch (error) {
+                            console.error('Error calling downloadHex:', error);
+                            alert('Download error: ' + error.message);
+                        }
+                    });
+                    
+                    console.log('Download button event listener attached successfully');
+                } else {
+                    console.error('Download button not found!');
+                }
+                
+                console.log('=== LoadHexData function completed successfully ===');
+                
+            } catch (error) {
+                console.error('=== LoadHexData function failed ===', error);
+                // If files not found, show instructions
+                hexContainer.innerHTML = `
+                    <div style="color: #ff4444; text-align: center; padding: 20px;">
+                        ⚠️ ERROR: Hex chunk files not found ⚠️<br><br>
+                        <div style="color: #ffaa00; font-size: 12px; text-align: left;">
+                        DEBUG INFO:<br>
+                        • Check browser console (F12) for detailed error messages<br>
+                        • Error: ${error.message}<br><br>
+                        
+                        TO FIX THIS:<br>
+                        1. Make sure you have files named: <span style="color: #00ff41;">data_chunk_1.txt</span>, <span style="color: #00ff41;">data_chunk_2.txt</span>, etc.<br>
+                        2. Make sure they are in the same repository as index.html<br>
+                        3. Wait 3-5 minutes after uploading for GitHub Pages to update<br>
+                        4. Try refreshing this page<br>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // Custom cursor
+        const cursor = document.querySelector('.cursor');
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+        
+        // Matrix background effect
+        const canvas = document.querySelector('.matrix');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        
+        const matrixChars = '01';
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = [];
+        
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+        
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px Share Tech Mono';
+            
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrixChars[Math.floor(Math.random() * matrixChars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+        
+        setInterval(drawMatrix, 100);
+        
+        // Resize canvas on window resize
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+        
+        // Random glitch effect
+        setInterval(() => {
+            const container = document.querySelector('.container');
+            if (Math.random() > 0.98) {
+                container.style.transform = 'translate(' + (Math.random() * 4 - 2) + 'px, ' + (Math.random() * 4 - 2) + 'px)';
+                setTimeout(() => {
+                    container.style.transform = 'translate(0, 0)';
+                }, 50);
+            }
+        }, 100);
+
+        // Load hex data when page loads
+        window.addEventListener('load', loadHexData);
+    </script>
+</body>
+</html>
